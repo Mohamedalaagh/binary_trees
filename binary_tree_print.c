@@ -17,30 +17,30 @@
  */
 static int print_t(const binary_tree_t *tree, int offset, int depth, char **s)
 {
-	char b[6];
-	int width, left, right, is_left, i;
+    char b[6];
+    int width, left, right, is_left, x;
 
-	if (!tree)
-		return (0);
-	is_left = (tree->parent && tree->parent->left == tree);
-	width = sprintf(b, "(%03d)", tree->n);
-	left = print_t(tree->left, offset, depth + 1, s);
-	right = print_t(tree->right, offset + left + width, depth + 1, s);
-	for (i = 0; i < width; i++)
-		s[depth][offset + left + i] = b[i];
-	if (depth && is_left)
-	{
-		for (i = 0; i < width + right; i++)
-			s[depth - 1][offset + left + width / 2 + i] = '-';
-		s[depth - 1][offset + left + width / 2] = '.';
-	}
-	else if (depth && !is_left)
-	{
-		for (i = 0; i < left + width; i++)
-			s[depth - 1][offset - width / 2 + i] = '-';
-		s[depth - 1][offset + left + width / 2] = '.';
-	}
-	return (left + width + right);
+    if (!tree)
+        return (0);
+    is_left = (tree->parent && tree->parent->left == tree);
+    width = sprintf(b, "(%03d)", tree->n);
+    left = print_t(tree->left, offset, depth + 1, s);
+    right = print_t(tree->right, offset + left + width, depth + 1, s);
+    for (x = 0; x < width; x++)
+        s[depth][offset + left + x] = b[x];
+    if (depth && is_left)
+    {
+        for (x = 0; x < width + right; x++)
+            s[depth - 1][offset + left + width / 2 + x] = '-';
+        s[depth - 1][offset + left + width / 2] = '.';
+    }
+    else if (depth && !is_left)
+    {
+        for (x = 0; x < left + width; x++)
+            s[depth - 1][offset - width / 2 + x] = '-';
+        s[depth - 1][offset + left + width / 2] = '.';
+    }
+    return (left + width + right);
 }
 
 /**
@@ -52,48 +52,57 @@ static int print_t(const binary_tree_t *tree, int offset, int depth, char **s)
  */
 static size_t _height(const binary_tree_t *tree)
 {
-	size_t height_l;
-	size_t height_r;
+    size_t height_l;
+    size_t height_r;
 
-	height_l = tree->left ? 1 + _height(tree->left) : 0;
-	height_r = tree->right ? 1 + _height(tree->right) : 0;
-	return (height_l > height_r ? height_l : height_r);
+    height_l = tree->left ? 1 + _height(tree->left) : 0;
+    height_r = tree->right ? 1 + _height(tree->right) : 0;
+    return (height_l > height_r ? height_l : height_r);
 }
 
 /**
  * binary_tree_print - Prints a binary tree
  *
  * @tree: Pointer to the root node of the tree to print
+ *
+ * Description:
+ * This function prints a binary tree in a 2D diagram form, where each level
+ * of the tree is represented as a line in the output. The tree structure
+ * is printed with connecting lines between parent and child nodes.
+ * The function handles memory allocation for the buffer used to store the
+ * printed tree representation. If the tree is empty or memory allocation
+ * fails, the function does not print anything.
  */
 void binary_tree_print(const binary_tree_t *tree)
 {
-	char **s;
-	size_t height, i, j;
+    char **s;
+    size_t height, x, j;
 
-	if (!tree)
-		return;
-	height = _height(tree);
-	s = malloc(sizeof(*s) * (height + 1));
-	if (!s)
-		return;
-	for (i = 0; i < height + 1; i++)
-	{
-		s[i] = malloc(sizeof(**s) * 255);
-		if (!s[i])
-			return;
-		memset(s[i], 32, 255);
-	}
-	print_t(tree, 0, 0, s);
-	for (i = 0; i < height + 1; i++)
-	{
-		for (j = 254; j > 1; --j)
-		{
-			if (s[i][j] != ' ')
-				break;
-			s[i][j] = '\0';
-		}
-		printf("%s\n", s[i]);
-		free(s[i]);
-	}
-	free(s);
+    if (!tree)
+        return;
+    height = _height(tree);
+    s = malloc(sizeof(*s) * (height + 1));
+    if (!s)
+        return;
+    for (x = 0; x < height + 1; x++)
+    {
+        s[x] = malloc(sizeof(**s) * 255);
+        if (!s[x])
+            return;
+        memset(s[x], 32, 255);
+    }
+    print_t(tree, 0, 0, s);
+    for (x = 0; x < height + 1; x++)
+    {
+        for (j = 254; j > 1; --j)
+        {
+            if (s[x][j] != ' ')
+                break;
+            s[x][j] = '\0';
+        }
+        printf("%s\n", s[x]);
+        free(s[x]);
+    }
+    free(s);
 }
+
